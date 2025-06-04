@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Permission;
 class PermissionController extends Controller
 {
     public function index(){
-        
+       return view('permissions.list'); 
     }
 
     public function create(){
@@ -23,6 +23,7 @@ class PermissionController extends Controller
 
         if($validator->passes()){
             Permission::create(['name'=>$request->name]);
+            return redirect()->route('permissions.index')->with('success','Permission added successfully');
         }else{
             return redirect()->route('permissions.create')->withInput()->withErrors($validator);
         }

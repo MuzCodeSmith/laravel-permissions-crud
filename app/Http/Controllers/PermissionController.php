@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
@@ -50,7 +51,23 @@ class PermissionController extends Controller
         }
     }
 
-    public function destroy(){
+    public function destroy(Request $request){
+        $id = $request->id;
 
+        $permission = Permission::find($id);
+
+        if($permission == null){
+            session()->flash('error','Permission not found');
+            return response()->json([
+                'status'=>false
+            ]);
+        }
+        $permission->delete();
+
+        session()->flash('success', 'Permission deleted Successfully!');
+
+        return response()->json([
+            'status'=>true
+        ]);
     }
 }

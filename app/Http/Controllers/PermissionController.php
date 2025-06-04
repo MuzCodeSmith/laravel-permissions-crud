@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -11,11 +13,19 @@ class PermissionController extends Controller
     }
 
     public function create(){
-
+        return view('permissions.create');
     }
     
-    public function store(){
+    public function store(Request $request){
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|unique:permissions|min:3',
+        ]);
 
+        if($validator->passes()){
+            Permission::create(['name'=>$request->name]);
+        }else{
+            return redirect()->route('permissions.create')->withInput()->withErrors($validator);
+        }
     }
 
     public function edit(){

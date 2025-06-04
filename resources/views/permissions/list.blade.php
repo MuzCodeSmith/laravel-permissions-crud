@@ -36,6 +36,9 @@
                     @endif
                 </tbody>
             </table>
+            <div class="py-4">
+                {{$permissions->links()}}
+            </div>
         </div>
     </div>
 </x-app-layout>

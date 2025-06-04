@@ -9,7 +9,8 @@ use Spatie\Permission\Models\Permission;
 class PermissionController extends Controller
 {
     public function index(){
-       return view('permissions.list'); 
+        $permissions = Permission::orderBy('created_at','DESC')->paginate(10);
+        return view('permissions.list',compact('permissions')); 
     }
 
     public function create(){

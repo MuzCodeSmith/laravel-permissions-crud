@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -37,6 +38,10 @@ class UserController extends Controller implements HasMiddleware
      */
     public function create()
     {
+        $roles = Role::orderBy('name','ASC')->get();
+        return view('user.create',[
+            'roles'=>$roles
+        ]);
     }
 
     /**
@@ -44,7 +49,30 @@ class UserController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name' =>'required|min:3',
+            'email' => 'required|email|unique:users,email',
+            'password'=>'required|min:5|same:confirm_password',
+            'confirm_password'=>'required',
+        ]);
+
+        if($validator->passes()){
+            $user = User::create([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'password'=>Hash::make($request->email)
+            ]);
+
+            if($request->roles){
+                $user->assignRole($request->roles);
+            }else{
+                $user->assignRole([]);
+            }
+
+            return redirect()->route('users.index')->with('success','User Created Successfully');
+        }else{
+            return redirect()->route('users.create')->withInput()->withErrors($validator);
+        }
     }
 
     /**
@@ -52,7 +80,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        //
+     
     }
 
     /**
@@ -78,15 +106,8 @@ class UserController extends Controller implements HasMiddleware
         $user = User::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                'unique:users,email,' . $id . ',id',
-            ],
+            'name' =>'required|min:3',
+            'email' => 'required|email|unique:users,email,'.$id .',id',
         ]);
 
         if($validator->passes()){

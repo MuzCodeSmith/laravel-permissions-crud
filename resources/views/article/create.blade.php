@@ -25,9 +25,7 @@
 
                             <label for="" class="text-lg font-medium">Content</label>
                             <div class="mt-3 mb-2">
-                                <textarea name="text" id="" cols="30" rows="10" placeholder="Enter Content" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                {{old('text')}}
-                                </textarea>
+                                <textarea name="text" id="" cols="30" rows="10" placeholder="Enter Content" class="border-gray-300 shadow-sm w-1/2 rounded-lg">{{old('text')}}</textarea>
                             </div>
 
                             <label for="" class="text-lg font-medium">Author</label>

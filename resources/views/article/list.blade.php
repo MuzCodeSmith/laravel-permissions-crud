@@ -28,6 +28,8 @@
                         <td class="px-6 py-5 text-left">{{$article->title}}</td>
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($article->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
+                            <a href="{{route('articles.edit',$article->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            <a href="javascript:void(0);" onclick="deleteArticle({{$article->id}})" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
                         </td>
                     </tr>
                     @endforeach
@@ -41,10 +43,10 @@
     </div>
     <x-slot name="script">
         <script type="text/javascript">
-            function deleteRole(id) {
+            function deleteArticle(id) {
                 if (confirm('Are You sure you want to delete')) {
                     $.ajax({
-                        url: '{{route("roles.destroy")}}',
+                        url: '{{route("articles.destroy")}}',
                         type: 'delete',
                         data: {
                             id: id
@@ -54,7 +56,7 @@
                             'x-csrf-token': '{{csrf_token()}}'
                         },
                         success: function(response) {
-                            window.location.href = '{{route("roles.index")}}'
+                            window.location.href = '{{route("articles.index")}}'
                         }
                     })
                 }

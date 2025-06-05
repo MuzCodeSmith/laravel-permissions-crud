@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Roles / List') }}
             </h2>
-            <a href="{{route('roles.create')}}" class="bg-slate-700 text-sm text-white rounded-lg px-5 py-3">Create</a>
+            <a href="{{route('roles.create')}}" class="bg-slate-700 text-sm hover:bg-slate-500 text-white rounded-lg px-5 py-3">Create</a>
         </div>
     </x-slot>
 
@@ -29,6 +29,8 @@
                         <td class="px-6 py-5 text-left">{{$role->permissions->pluck('name')->implode(', ')}}</td>
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($role->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
+                            <a href="{{route('roles.edit',$role->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            <a href="" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
                         </td>
                     </tr>
                     @endforeach

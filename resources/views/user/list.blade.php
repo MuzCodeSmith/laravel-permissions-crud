@@ -15,7 +15,7 @@
                 <thead class="bg-gray-50">
                     <tr class="border-b">
                         <th class="px-6 py-5 text-left" width="60">#</th>
-                        <th class="px-6 py-5 text-left">Name</th>
+                        <th class="px-6 py-5 text-left" width="200">Name</th>
                         <th class="px-6 py-5 text-left">Roles</th>
                         <th class="px-6 py-5 text-left" width="180">Created</th>
                         <th class="px-6 py-5 text-center" width="250">Action</th>

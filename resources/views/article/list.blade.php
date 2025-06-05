@@ -28,8 +28,13 @@
                         <td class="px-6 py-5 text-left">{{$article->title}}</td>
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($article->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
-                            <a href="{{route('articles.edit',$article->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
-                            <a href="javascript:void(0);" onclick="deleteArticle({{$article->id}})" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            @can('edit articles')
+                                <a href="{{route('articles.edit',$article->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            @endcan
+                            @can('delete articles')
+                                <a href="javascript:void(0);" onclick="deleteArticle({{$article->id}})" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            @endcan
+
                         </td>
                     </tr>
                     @endforeach

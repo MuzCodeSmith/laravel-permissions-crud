@@ -30,7 +30,9 @@
                         <td class="px-6 py-5 text-left">{{$user->roles->pluck('name')->implode(', ')}}</td>
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($user->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
+                            @can('edit users')
                             <a href="{{route('users.edit',$user->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

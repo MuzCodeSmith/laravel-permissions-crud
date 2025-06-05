@@ -28,8 +28,12 @@
                         <td class="px-6 py-5 text-left">{{$permission->name}}</td>
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($permission->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
-                            <a href="{{route('permissions.edit',$permission->id)}}" class="bg-slate-600 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
-                            <a href="javascript:void(0);" onclick="deletePermission({{$permission->id}})" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            @can('edit permissions')
+                                <a href="{{route('permissions.edit',$permission->id)}}" class="bg-slate-600 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            @endcan
+                            @can('delete permissions')
+                                <a href="javascript:void(0);" onclick="deletePermission({{$permission->id}})" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

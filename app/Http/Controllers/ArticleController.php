@@ -13,9 +13,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        $articles = Article::latest()->paginate(10);
+        return view('article.list', ['articles' => $articles]);
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -29,21 +29,20 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
-            'title'=>'required|min:5',
-            'author'=>'required|min:5'
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:5',
+            'author' => 'required|min:5'
         ]);
-        
-        if($validator->passes()){
+
+        if ($validator->passes()) {
             $article = new Article();
             $article->title = $request->title;
             $article->text = $request->text;
             $article->author = $request->author;
             $article->save();
 
-            return redirect()->route('articles.index')->with('success','Article Created Successfully!');
-
-        }else{
+            return redirect()->route('articles.index')->with('success', 'Article Created Successfully!');
+        } else {
             return redirect()->route('articles.create')->withInput()->withErrors($validator);
         }
     }

@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/roles',[RoleController::class,'destroy'])->name('roles.destroy');
 
     // articles routes
+    Route::get('articles',[ArticleController::class,'index'])->name('articles.index');
     Route::get('articles/create',[ArticleController::class,'create'])->name('articles.create');
     Route::post('articles',[ArticleController::class,'store'])->name('articles.store');
 });

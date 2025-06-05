@@ -30,7 +30,7 @@
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($role->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
                             <a href="{{route('roles.edit',$role->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
-                            <a href="" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            <a href="javascript:void(0);" onclick="deleteRole({{$role->id}})" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
                         </td>
                     </tr>
                     @endforeach
@@ -44,10 +44,10 @@
     </div>
     <x-slot name="script">
         <script type="text/javascript">
-            function deletePermission(id) {
+            function deleteRole(id) {
                 if (confirm('Are You sure you want to delete')) {
                     $.ajax({
-                        url: '{{route("permissions.destroy")}}',
+                        url: '{{route("roles.destroy")}}',
                         type: 'delete',
                         data: {
                             id: id

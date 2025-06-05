@@ -67,4 +67,22 @@ class RoleController extends Controller
             return redirect()->route('roles.edit',$id)->withInput()->withErrors($validator);
         }
     }
+
+    public function destroy(Request $request){
+        $id = $request->id;
+        $role = Role::findOrFail($id);
+
+        if($role == null){
+            session()->flash('error','Role not found');
+            return response()->json([
+                'status'=>false
+            ]);
+        }
+
+        $role->delete();
+        session()->flash('success','Role deleted successfully!');
+        return response()->json([
+            'status'=>true
+        ]);
+    }
 }

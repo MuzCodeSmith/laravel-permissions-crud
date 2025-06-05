@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Role;
 class RoleController extends Controller
 {
     public function index(){
-        $roles=Role::orderBy('name','ASC')->paginate(1);
+        $roles=Role::orderBy('name','ASC')->paginate(10);
         return view('roles.list',['roles'=>$roles]);
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
 {
@@ -19,7 +21,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        //
+        return view('article.create');
     }
 
     /**
@@ -27,7 +29,23 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'title'=>'required|min:5',
+            'author'=>'required|min:5'
+        ]);
+        
+        if($validator->passes()){
+            $article = new Article();
+            $article->title = $request->title;
+            $article->text = $request->text;
+            $article->author = $request->author;
+            $article->save();
+
+            return redirect()->route('articles.index')->with('success','Article Created Successfully!');
+
+        }else{
+            return redirect()->route('articles.create')->withInput()->withErrors($validator);
+        }
     }
 
     /**

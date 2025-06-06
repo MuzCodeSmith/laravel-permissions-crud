@@ -35,12 +35,20 @@ class PermissionController extends Controller implements HasMiddleware
             'name'=>'required|unique:permissions|min:3',
         ]);
 
-        if($validator->passes()){
-            Permission::create(['name'=>$request->name]);
-            return redirect()->route('permissions.index')->with('success','Permission added successfully');
-        }else{
-            return redirect()->route('permissions.create')->withInput()->withErrors($validator);
+        if($validator->fails()){
+            if($request->ajax()){
+                session()->flash('error','Something Went Wrong');
+                return response()->json([
+                    'errors'=>$validator->errors()
+                ],422);
+            }
         }
+            Permission::create(['name'=>$request->name]);
+
+            if ($request->ajax()) {
+                session()->flash('succes','Permission Deleted Successfully!');
+                return response()->json(['success' => true], 200);
+            }
     }
 
     public function edit($id){

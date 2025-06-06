@@ -17,8 +17,8 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:view users',only:['index']),
             new Middleware('permission:edit users',only:['edit']),
-            // new Middleware('permission:create users',only:['create']),
-            // new Middleware('permission:delete users',only:['destroy']),
+            new Middleware('permission:create users',only:['create']),
+            new Middleware('permission:delete users',only:['destroy']),
         ];
     }
 
@@ -57,10 +57,20 @@ class UserController extends Controller implements HasMiddleware
         ]);
 
         if($validator->passes()){
+      
+            $path = null;
+
+            if($request->hasFile('profile_image')){
+                $path= $request->file('profile_image')->store('profiles','public');
+            }
+
             $user = User::create([
                 'name'=>$request->name,
                 'email'=>$request->email,
-                'password'=>Hash::make($request->email)
+                'password'=>Hash::make($request->email),
+                'phone'=>$request->phone,
+                'gender'=>$request->gender,
+                'profile_image'=>$path
             ]);
 
             if($request->roles){
@@ -128,8 +138,22 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        //
+        $id = $request->id;
+        $article = User::findOrFail($id);
+
+        if($article == null){
+            session()->flash('error','User not found!');
+            return response()->json([
+                'status'=>false
+            ]);
+        }else{
+            $article->delete();
+            session()->flash('success','User deleted successfully!');
+            return response()->json([
+                'status'=>true
+            ]);
+        }
     }
 }

@@ -12,6 +12,9 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div id="success-msg" class="text-green-600 font-semibold mt-4 hidden">
+                Permission updated successfully!
+            </div>
             <x-message></x-message>
             <table class="w-full">
                 <thead class="bg-gray-50">
@@ -31,10 +34,10 @@
                         <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($permission->created_at)->format('d M, Y')}}</td>
                         <td class="px-6 py-5 text-left">
                             @can('edit permissions')
-                                <a href="{{route('permissions.edit',$permission->id)}}" class="bg-slate-600 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
+                            <a href="{{route('permissions.edit',$permission->id)}}" class="bg-slate-600 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
                             @endcan
                             @can('delete permissions')
-                                <a href="javascript:void(0);" onclick="deletePermission({{$permission->id}})" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
+                            <a href="javascript:void(0);" onclick="deletePermission({{$permission->id}})" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
                             @endcan
                         </td>
                     </tr>
@@ -49,19 +52,21 @@
     </div>
     <x-slot name="script">
         <script type="text/javascript">
-            function deletePermission(id){
-                if(confirm('Are You sure you want to delete')){
+            function deletePermission(id) {
+                if (confirm('Are You sure you want to delete')) {
                     $.ajax({
-                      url:'{{route("permissions.destroy")}}',
-                      type:'delete',
-                      data:{id:id},
-                      dataType:'json',
-                      headers:{
-                        'x-csrf-token' : '{{csrf_token()}}'
-                      },
-                      success:function(response){
-                        window.location.href = '{{route("permissions.index")}}'
-                      }
+                        url: '{{route("permissions.destroy")}}',
+                        type: 'delete',
+                        data: {
+                            id: id
+                        },
+                        dataType: 'json',
+                        headers: {
+                            'x-csrf-token': '{{csrf_token()}}'
+                        },
+                        success: function(response) {
+                            window.location.href = '{{route("permissions.index")}}'
+                        }
                     })
                 }
             }

@@ -62,13 +62,32 @@ class PermissionController extends Controller implements HasMiddleware
             'name'=>'required|min:3|unique:permissions,name,'.$id.',id',
         ]);
 
-        if($validator->passes()){
-            $permission->name = $request->name;
-            $permission->save();
-            return redirect()->route('permissions.index')->with('success','Permission Updated Successfully!');
-        }else{
-            return redirect()->route('permissions.edit',$id)->withInput()->withErrors($validator);
+        if($validator->fails()){
+            if($request->ajax()){
+                return response()->json([
+                    'errors'=>$validator->errors(),
+                ],422);
+                return redirect()->route('permissions.edit',$id)->withInput()->withErrors($validator);
+            }
         }
+
+        $permission->name = $request->name;
+        $permission->save();
+
+        if($request->ajax()){
+            return response()->json([
+                'success'=> true
+            ],200);
+        }
+        return redirect()->route('permissions.index')->with('success','Permission Updated Successfully!');
+
+        // if($validator->passes()){
+        //     $permission->name = $request->name;
+        //     $permission->save();
+        //     return redirect()->route('permissions.index')->with('success','Permission Updated Successfully!');
+        // }else{
+        //     return redirect()->route('permissions.edit',$id)->withInput()->withErrors($validator);
+        // }
     }
 
     public function destroy(Request $request){

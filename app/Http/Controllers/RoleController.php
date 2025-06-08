@@ -8,6 +8,8 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Yajra\DataTables\Facades\DataTables;
+
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -20,12 +22,35 @@ class RoleController extends Controller implements HasMiddleware
             new Middleware('permission:delete roles', only: ['destroy']),
         ];
     }
-
+    
     public function index()
     {
-        $roles = Role::orderBy('name', 'ASC')->paginate(10);
-        return view('roles.list', ['roles' => $roles]);
+        return view('roles.list');
     }
+
+    public function data()
+    {
+        $roles = Role::with('permissions')->select(['id', 'name', 'created_at']);
+        return DataTables::of($roles)
+            ->addColumn('permissions', function ($role) {
+                return $role->permissions->pluck('name')->implode(', ');
+            })
+            ->addColumn('action', function ($role) {
+                $edit = auth()->user()->can('edit roles')
+                    ? '<a href="' . route('roles.edit', $role->id) . '" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-4 py-2 mr-2">Edit</a>' : '';
+
+                $delete = auth()->user()->can('delete roles')
+                    ? '<a href="javascript:void(0);" onclick="deleteRole(' . $role->id . ')" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-4 py-2">Delete</a>' : '';
+
+                return $edit . $delete;
+            })
+            ->editColumn('created_at', function ($role) {
+                return \Carbon\Carbon::parse($role->created_at)->format('d M, Y');
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
 
     public function create()
     {

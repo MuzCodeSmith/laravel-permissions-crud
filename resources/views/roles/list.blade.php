@@ -5,52 +5,63 @@
                 {{ __('Roles / List') }}
             </h2>
             @can('create roles')
-                <a href="{{route('roles.create')}}" class="bg-slate-700 text-sm hover:bg-slate-500 text-white rounded-lg px-5 py-3">Create</a>
+            <a href="{{route('roles.create')}}" class="bg-slate-700 text-sm hover:bg-slate-500 text-white rounded-lg px-5 py-3">Create</a>
             @endcan
         </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <x-message></x-message>
-            <table class="w-full">
+            <x-message></x-message>
+            <table id="roles-table" class="w-full bg-white">
                 <thead class="bg-gray-50">
                     <tr class="border-b">
-                        <th class="px-6 py-5 text-left" width="60">#</th>
-                        <th class="px-6 py-5 text-left" width="180">Name</th>
-                        <th class="px-6 py-5 text-left">Permissions</th>
-                        <th class="px-6 py-5 text-left" width="180">Created</th>
-                        <th class="px-6 py-5 text-center" width="250">Action</th>
+                        <th width="60">#</th>
+                        <th width="180">Name</th>
+                        <th>Permissions</th>
+                        <th width="180">Created</th>
+                        <th width="250" class="text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white">
-                    @if($roles->isNotEmpty())
-                    @foreach($roles as $role)
-                    <tr class="border-b">
-                        <td class="px-6 py-5 text-left">{{$role->id}}</td>
-                        <td class="px-6 py-5 text-left">{{$role->name}}</td>
-                        <td class="px-6 py-5 text-left">{{$role->permissions->pluck('name')->implode(', ')}}</td>
-                        <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($role->created_at)->format('d M, Y')}}</td>
-                        <td class="px-6 py-5 text-left">
-                            @can('edit roles')
-                            <a href="{{route('roles.edit',$role->id)}}" class="bg-slate-700 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
-                            @endcan
-                            @can('delete roles')
-                            <a href="javascript:void(0);" onclick="deleteRole({{$role->id}})" class="bg-red-700 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
-                            @endcan
-                        </td>
-                    </tr>
-                    @endforeach
-                    @endif
-                </tbody>
             </table>
-            <div class="py-4">
-                {{$roles->links()}}
-            </div>
+
         </div>
     </div>
     <x-slot name="script">
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
         <script type="text/javascript">
+            $(function() {
+                $('#roles-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route("roles.data") }}',
+                    columns: [{
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'permissions',
+                            name: 'permissions'
+                        },
+                        {
+                            data: 'created_at',
+                            name: 'created_at'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+            });
+
             function deleteRole(id) {
                 if (confirm('Are You sure you want to delete')) {
                     $.ajax({

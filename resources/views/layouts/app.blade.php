@@ -26,6 +26,11 @@
             padding: 0.75rem 1rem;
             /* Make headers match too */
         }
+
+        #roles-table td,
+        #roles-table th {
+            padding: 0.75rem 1rem;
+        }
     </style>
 </head>
 

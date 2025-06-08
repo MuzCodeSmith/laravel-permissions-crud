@@ -60,7 +60,7 @@
                         url: "{{ route('roles.store') }}",
                         method: "POST",
                         data: {
-                            token: token,
+                            _token: token,
                             name: name,
                             permissions: permissions
                         },

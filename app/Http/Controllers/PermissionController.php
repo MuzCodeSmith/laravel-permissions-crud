@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Yajra\DataTables\Facades\DataTables;
 
 class PermissionController extends Controller implements HasMiddleware
 {
@@ -21,9 +22,25 @@ class PermissionController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(){
-        $permissions = Permission::orderBy('created_at','DESC')->paginate(10);
-        return view('permissions.list',['permissions'=>$permissions]); 
+    public function index()
+    {
+        return view('permissions.list');
+    }
+    
+    public function data()
+    {
+        $permissions = Permission::select(['id', 'name', 'created_at']);
+        return DataTables::of($permissions)
+            ->addColumn('action', function ($permission) {
+                $edit = auth()->user()->can('edit permissions') ? '<a href="' . route('permissions.edit', $permission->id) . '" class="bg-slate-600 text-sm text-white rounded-lg px-3 py-2 mr-2">Edit</a>' : '';
+                $delete = auth()->user()->can('delete permissions') ? '<a href="javascript:void(0);" onclick="deletePermission(' . $permission->id . ')" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-3 py-2">Delete</a>' : '';
+                return $edit . $delete;
+            })
+            ->editColumn('created_at', function ($permission) {
+                return \Carbon\Carbon::parse($permission->created_at)->format('d M, Y');
+            })
+            ->rawColumns(['action']) // allow HTML in action column
+            ->make(true);
     }
 
     public function create(){
@@ -46,7 +63,7 @@ class PermissionController extends Controller implements HasMiddleware
             Permission::create(['name'=>$request->name]);
 
             if ($request->ajax()) {
-                session()->flash('succes','Permission Deleted Successfully!');
+                session()->flash('success','Permission Added Successfully!');
                 return response()->json(['success' => true], 200);
             }
     }
@@ -64,22 +81,23 @@ class PermissionController extends Controller implements HasMiddleware
 
         if($validator->fails()){
             if($request->ajax()){
+                session()->flash('error',$validator->errors());
                 return response()->json([
                     'errors'=>$validator->errors(),
                 ],422);
-                return redirect()->route('permissions.edit',$id)->withInput()->withErrors($validator);
+                // return redirect()->route('permissions.edit',$id)->withInput()->withErrors($validator);
             }
         }
 
         $permission->name = $request->name;
         $permission->save();
-
+        session()->flash('success','Permission Updated successfully!');
         if($request->ajax()){
             return response()->json([
                 'success'=> true
             ],200);
         }
-        return redirect()->route('permissions.index')->with('success','Permission Updated Successfully!');
+        // return redirect()->route('permissions.index')->with('success','Permission Updated Successfully!');
 
         // if($validator->passes()){
         //     $permission->name = $request->name;

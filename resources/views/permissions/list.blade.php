@@ -16,58 +16,52 @@
                 Permission updated successfully!
             </div>
             <x-message></x-message>
-            <table class="w-full">
+            <table id="permissions-table" class="min-w-full bg-white">
                 <thead class="bg-gray-50">
-                    <tr class="border-b">
-                        <th class="px-6 py-5 text-left" width="60">#</th>
-                        <th class="px-6 py-5 text-left">Name</th>
-                        <th class="px-6 py-5 text-left" width="180">Created</th>
-                        <th class="px-6 py-5 text-center" width="250">Action</th>
+                    <tr>
+                        <th width="60">#</th>
+                        <th>Name</th>
+                        <th width="180">Created</th>
+                        <th width="250">Action</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white">
-                    @if($permissions->isNotEmpty())
-                    @foreach($permissions as $permission)
-                    <tr class="border-b">
-                        <td class="px-6 py-5 text-left">{{$permission->id}}</td>
-                        <td class="px-6 py-5 text-left">{{$permission->name}}</td>
-                        <td class="px-6 py-5 text-left">{{\Carbon\Carbon::parse($permission->created_at)->format('d M, Y')}}</td>
-                        <td class="px-6 py-5 text-left">
-                            @can('edit permissions')
-                            <a href="{{route('permissions.edit',$permission->id)}}" class="bg-slate-600 hover:bg-slate-500 text-sm text-white rounded-lg px-5 py-3">Edit</a>
-                            @endcan
-                            @can('delete permissions')
-                            <a href="javascript:void(0);" onclick="deletePermission({{$permission->id}})" class="bg-red-600 hover:bg-red-500 text-sm text-white rounded-lg px-5 py-3">Delete</a>
-                            @endcan
-                        </td>
-                    </tr>
-                    @endforeach
-                    @endif
-                </tbody>
             </table>
-            <div class="py-4">
-                {{$permissions->links()}}
-            </div>
         </div>
     </div>
+
     <x-slot name="script">
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
+
         <script type="text/javascript">
+            $(function () {
+                $('#permissions-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route('permissions.data') }}',
+                    columns: [
+                        { data: 'id', name: 'id' },
+                        { data: 'name', name: 'name' },
+                        { data: 'created_at', name: 'created_at' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+            });
+
             function deletePermission(id) {
                 if (confirm('Are You sure you want to delete')) {
                     $.ajax({
                         url: '{{route("permissions.destroy")}}',
                         type: 'delete',
-                        data: {
-                            id: id
-                        },
+                        data: { id: id },
                         dataType: 'json',
                         headers: {
                             'x-csrf-token': '{{csrf_token()}}'
                         },
                         success: function(response) {
-                            window.location.href = '{{route("permissions.index")}}'
+                            $('#permissions-table').DataTable().ajax.reload();
                         }
-                    })
+                    });
                 }
             }
         </script>

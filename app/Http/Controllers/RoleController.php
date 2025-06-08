@@ -10,6 +10,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Yajra\DataTables\Facades\DataTables;
 
+use function Laravel\Prompts\error;
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -22,7 +23,7 @@ class RoleController extends Controller implements HasMiddleware
             new Middleware('permission:delete roles', only: ['destroy']),
         ];
     }
-    
+
     public function index()
     {
         return view('roles.list');
@@ -68,6 +69,7 @@ class RoleController extends Controller implements HasMiddleware
 
         if ($validator->fails()) {
             if ($request->ajax()) {
+                session()->flash('error', $validator0 > error());
                 return response()->json(
                     [
                         'errors' => $validator->errors()
@@ -84,14 +86,15 @@ class RoleController extends Controller implements HasMiddleware
                 $role->givePermissionTo($permission);
             }
         }
-        if($request->ajax()){
+        session()->flash('success', 'Role Created Successfully!');
+        if ($request->ajax()) {
             return response()->json([
-                'success'=>true
+                'success' => true
             ]);
         }
 
-            return redirect()->route('roles.index')->with('success','Role added successfully');
-        
+        return redirect()->route('roles.index')->with('success', 'Role added successfully');
+
 
         // if($validator->passes()){
         //     $role =Role::create(['name'=>$request->name]);
@@ -124,18 +127,37 @@ class RoleController extends Controller implements HasMiddleware
             'name' => 'required|unique:roles,name,' . $id . ',id'
         ]);
 
-        if ($validator->passes()) {
-            $role->name = $request->name;
-            $role->save();
-            if (!empty($request->permissions)) {
-                $role->syncPermissions($request->permissions);
-            } else {
-                $role->syncPermissions([]);
-            }
-            return redirect()->route('roles.index')->with('success', 'Role updated successfully!');
-        } else {
-            return redirect()->route('roles.edit', $id)->withInput()->withErrors($validator);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ]);
         }
+
+        $role->name = $request->name;
+        $role->save();
+        if (!empty($request->permissions)) {
+            $role->syncPermissions($request->permissions);
+        } else {
+            $role->syncPermissions([]);
+        }
+
+        session()->flash('success','Role Updated Successfully');
+        return response()->json([
+                'status'=>true,
+        ]);
+
+        // if ($validator->passes()) {
+        //     $role->name = $request->name;
+        //     $role->save();
+        //     if (!empty($request->permissions)) {
+        //         $role->syncPermissions($request->permissions);
+        //     } else {
+        //         $role->syncPermissions([]);
+        //     }
+        //     return redirect()->route('roles.index')->with('success', 'Role updated successfully!');
+        // } else {
+        //     return redirect()->route('roles.edit', $id)->withInput()->withErrors($validator);
+        // }
     }
 
     public function destroy(Request $request)

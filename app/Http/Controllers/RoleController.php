@@ -141,9 +141,9 @@ class RoleController extends Controller implements HasMiddleware
             $role->syncPermissions([]);
         }
 
-        session()->flash('success','Role Updated Successfully');
+        session()->flash('success', 'Role Updated Successfully');
         return response()->json([
-                'status'=>true,
+            'status' => true,
         ]);
 
         // if ($validator->passes()) {

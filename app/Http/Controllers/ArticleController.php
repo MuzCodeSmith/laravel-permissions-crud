@@ -11,13 +11,13 @@ use Illuminate\Routing\Controllers\Middleware;
 
 class ArticleController extends Controller implements HasMiddleware
 {
-    public static function middleware():array
+    public static function middleware(): array
     {
         return [
-            new Middleware('permission:view articles',only:['index']),
-            new Middleware('permission:edit articles',only:['edit']),
-            new Middleware('permission:create articles',only:['create']),
-            new Middleware('permission:delete articles',only:['destroy']),
+            new Middleware('permission:view articles', only: ['index']),
+            new Middleware('permission:edit articles', only: ['edit']),
+            new Middleware('permission:create articles', only: ['create']),
+            new Middleware('permission:delete articles', only: ['destroy']),
         ];
     }
 
@@ -71,7 +71,7 @@ class ArticleController extends Controller implements HasMiddleware
     public function edit(string $id)
     {
         $article = Article::findOrFail($id);
-        return view('article.edit',['article'=>$article]);
+        return view('article.edit', ['article' => $article]);
     }
 
     /**
@@ -81,21 +81,20 @@ class ArticleController extends Controller implements HasMiddleware
     {
         $article = Article::findOrFail($id);
 
-        $validator = Validator::make($request->all(),[
-            'title'=>'required|min:5',
-            'author'=>'required|min:5'
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:5',
+            'author' => 'required|min:5'
         ]);
 
-        if($validator->passes()){
+        if ($validator->passes()) {
             $article->title = $request->title;
             $article->text = $request->text;
             $article->author = $request->author;
             $article->save();
-            return redirect()->route('articles.index')->with('success','Article Updated Successfully');
-        }else{
-            return redirect()->route('articles.edit',$id)->withInput()->withErrors($validator);
+            return redirect()->route('articles.index')->with('success', 'Article Updated Successfully');
+        } else {
+            return redirect()->route('articles.edit', $id)->withInput()->withErrors($validator);
         }
-
     }
 
     /**
@@ -106,18 +105,17 @@ class ArticleController extends Controller implements HasMiddleware
         $id = $request->id;
         $article = Article::findOrFail($id);
 
-        if($article == null){
-            session()->flash('error','Article not found!');
+        if ($article == null) {
+            session()->flash('error', 'Article not found!');
             return response()->json([
-                'status'=>false
+                'status' => false
             ]);
-        }else{
+        } else {
             $article->delete();
-            session()->flash('success','Article deleted successfully!');
+            session()->flash('success', 'Article deleted successfully!');
             return response()->json([
-                'status'=>true
+                'status' => true
             ]);
         }
-
     }
 }
